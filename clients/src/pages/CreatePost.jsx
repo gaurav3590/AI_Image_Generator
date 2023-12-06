@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { preview } from "../assets";
@@ -14,10 +15,10 @@ const CreatePost = () => {
 
     const [generatingImg, setGeneratingImg] = useState(false);
     const [loading, setLoading] = useState(false);
+    
     const handleSubmit =()=>{
-
+        
     }
-
     const handleChange =(e)=>{
         setForm({ ...form,[e.target.name]:e.target.value})
     }
@@ -27,10 +28,33 @@ const CreatePost = () => {
         setForm({ ...form,prompt:randomPrompt})
 
     }
+    
+    const generatingImage =async()=>{
+        if(form.prompt){
+            try {
+                setGeneratingImg(true);
+                const response=await fetch('https://loaclhost:8000/api/v1/AI',{
+                    method:'POST',
+                    headers:{
+                        'Content-Type':'application/json',
+                    },
+                    body:JSON.stringify({prompt:form.prompt}),
+                })
+                const data=await response.json();
 
-    const generatingImage =()=>{
+                setForm({...form,photo:`data:image/jpeg;base64,${data.photo}`})
+            } catch (error) {
+                alert(error);
+                console.log(error);
+            } finally {
+                setGeneratingImg(false);
+            }
+        } else {
+            alert('Please Enter a Prompt')
+        }
 
     }
+
 
     return (
     <section className="max-w-7xl">
